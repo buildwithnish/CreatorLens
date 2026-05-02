@@ -1,0 +1,6 @@
+{
+  "name": "creatorlens",
+  "version": "1.0.0",
+  "description": "YouTube content analyst for creators",
+  "engines": { "node": "18.x" }
+}

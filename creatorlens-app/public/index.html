@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CreatorLens</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FFFDF9;
+    --amber-light: #FFF3DC;
+    --amber: #F5A623;
+    --amber-dark: #B5710A;
+    --coral-light: #FFF0EB;
+    --coral: #E8693A;
+    --coral-dark: #A03E1C;
+    --purple-light: #F0EEFF;
+    --purple: #7C6FE0;
+    --purple-dark: #4A3FA8;
+    --green-light: #EDFAF2;
+    --green: #2EB86A;
+    --green-dark: #1A7042;
+    --red-light: #FFF0EE;
+    --red: #E84040;
+    --red-dark: #A02020;
+    --text: #1A1814;
+    --text-2: #5A5550;
+    --text-3: #9A9590;
+    --border: rgba(26,24,20,0.1);
+    --border-2: rgba(26,24,20,0.06);
+    --sans: 'DM Sans', sans-serif;
+    --serif: 'DM Serif Display', serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--warm-white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .logo {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  .logo span { color: var(--coral); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .nav-pill {
+    background: var(--amber-light);
+    color: var(--amber-dark);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* MAIN LAYOUT */
+  main { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  /* SETUP SCREEN */
+  #setup-screen { animation: fadeIn 0.4s ease; }
+
+  .setup-hero {
+    text-align: center;
+    padding: 48px 0 40px;
+  }
+  .setup-hero h1 {
+    font-family: var(--serif);
+    font-size: 42px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .setup-hero h1 em {
+    font-style: italic;
+    color: var(--coral);
+  }
+  .setup-hero p {
+    font-size: 16px;
+    color: var(--text-2);
+    max-width: 420px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .setup-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 16px;
+  }
+
+  .setup-card h2 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .step-badge {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--amber-light);
+    color: var(--amber-dark);
+    font-size: 11px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  input[type="text"], input[type="password"], textarea, select {
+    width: 100%;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    margin-bottom: 14px;
+  }
+  input:focus, textarea:focus { border-color: var(--amber); }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+
+  .input-hint {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: -10px;
+    margin-bottom: 14px;
+  }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn-primary {
+    background: var(--text);
+    color: var(--warm-white);
+    border: none;
+    border-radius: 12px;
+    padding: 13px 28px;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: opacity 0.15s, transform 0.1s;
+    margin-top: 4px;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* LOADING */
+  #loading-screen {
+    display: none;
+    text-align: center;
+    padding: 80px 20px;
+    animation: fadeIn 0.3s ease;
+  }
+  .loading-orb {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--amber-light);
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  .loading-orb svg { width: 28px; height: 28px; }
+  #loading-screen h2 {
+    font-family: var(--serif);
+    font-size: 26px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  #loading-screen p { font-size: 14px; color: var(--text-2); }
+  .loading-dots span {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    margin: 0 2px;
+    animation: bounce 1.2s ease-in-out infinite;
+  }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  /* RESULTS SCREEN */
+  #results-screen { display: none; animation: fadeIn 0.5s ease; }
+
+  .channel-banner {
+    background: var(--amber-light);
+    border: 1px solid rgba(245,166,35,0.25);
+    border-radius: 18px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .ch-left { display: flex; align-items: center; gap: 14px; }
+  .ch-icon {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: var(--amber);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif);
+    font-size: 18px;
+    color: white;
+    flex-shrink: 0;
+  }
+  .ch-name { font-size: 16px; font-weight: 500; color: var(--text); }
+  .ch-meta { font-size: 12px; color: var(--amber-dark); margin-top: 2px; }
+  .ch-right { display: flex; gap: 24px; }
+  .ch-stat { text-align: right; }
+  .ch-stat-val { font-size: 18px; font-weight: 500; color: var(--amber-dark); }
+  .ch-stat-label { font-size: 11px; color: var(--amber-dark); opacity: 0.7; }
+
+  .section-heading {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 14px;
+    margin-top: 32px;
+  }
+
+  /* INSIGHT CARDS */
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .insight-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+  }
+  .insight-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .badge-coral { background: var(--coral-light); color: var(--coral-dark); }
+  .badge-amber { background: var(--amber-light); color: var(--amber-dark); }
+  .badge-purple { background: var(--purple-light); color: var(--purple-dark); }
+  .badge-green { background: var(--green-light); color: var(--green-dark); }
+
+  .insight-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.35;
+    margin-bottom: 7px;
+  }
+  .insight-detail {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+  .insight-datapoint {
+    font-size: 11px;
+    color: var(--text-3);
+    border-top: 1px solid var(--border-2);
+    padding-top: 10px;
+    font-weight: 500;
+  }
+
+  /* IDEA CARDS */
+  .ideas-stack { display: flex; flex-direction: column; gap: 10px; }
+  .idea-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .idea-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--purple-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--purple-dark);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .idea-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+  .idea-hook {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.5;
+    font-style: italic;
+    margin-bottom: 10px;
+  }
+  .idea-outline {
+    font-size: 12px;
+    color: var(--text-3);
+    line-height: 1.6;
+    margin-bottom: 10px;
+    padding-left: 14px;
+  }
+  .idea-outline li { margin-bottom: 2px; }
+  .idea-why {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--purple-dark);
+    background: var(--purple-light);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  /* BLIND SPOTS */
+  .blindspots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .blind-card {
+    background: var(--red-light);
+    border: 1px solid rgba(232,64,64,0.15);
+    border-radius: 16px;
+    padding: 18px;
+  }
+  .blind-issue {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--red-dark);
+    margin-bottom: 7px;
+  }
+  .blind-evidence {
+    font-size: 12px;
+    color: var(--red-dark);
+    opacity: 0.75;
+    line-height: 1.55;
+  }
+
+  /* QUICK WIN */
+  .quickwin-card {
+    background: var(--green-light);
+    border: 1px solid rgba(46,184,106,0.2);
+    border-radius: 16px;
+    padding: 20px 22px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .qw-orb {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(46,184,106,0.2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .qw-orb svg { width: 18px; height: 18px; stroke: var(--green-dark); }
+  .qw-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--green-dark);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .effort-tag {
+    background: white;
+    border: 1px solid rgba(46,184,106,0.3);
+    border-radius: 20px;
+    font-size: 10px;
+    color: var(--green-dark);
+    padding: 1px 7px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .qw-action { font-size: 13px; color: var(--green-dark); line-height: 1.55; margin-bottom: 6px; }
+  .qw-impact { font-size: 12px; color: var(--green); font-weight: 500; }
+
+  /* ERROR */
+  .error-banner {
+    background: var(--red-light);
+    border: 1px solid rgba(232,64,64,0.2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--red-dark);
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-2);
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background 0.15s;
+  }
+  .reset-btn:hover { background: var(--warm-white); }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">creator<span>lens</span></div>
+  <div class="nav-right">
+    <span class="nav-pill">beta</span>
+  </div>
+</nav>
+
+<main>
+
+  <!-- SETUP SCREEN -->
+  <div id="setup-screen">
+    <div class="setup-hero">
+      <h1>Know exactly why your<br>videos <em>work.</em></h1>
+      <p>Connect your YouTube channel and get personalised insights, tailored ideas, and a clear action plan — in seconds.</p>
+    </div>
+
+    <div id="error-banner" class="error-banner"></div>
+
+    <div class="setup-card" style="text-align:center;padding:40px 32px">
+      <div style="width:56px;height:56px;background:#fff0eb;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <path d="M22.5 13c0 5.247-4.253 9.5-9.5 9.5S3.5 18.247 3.5 13 7.753 3.5 13 3.5 22.5 7.753 22.5 13Z" stroke="#E8693A" stroke-width="1.4"/>
+          <path d="M10.5 10.5L16 13l-5.5 2.5v-5Z" fill="#E8693A"/>
+        </svg>
+      </div>
+      <h2 style="font-size:18px;font-weight:500;color:var(--text);margin-bottom:8px;font-family:var(--serif)">Connect your YouTube channel</h2>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:24px;max-width:320px;margin-left:auto;margin-right:auto;line-height:1.6">We'll read your video titles, views, and engagement data. We never post, upload, or modify anything.</p>
+      <button class="btn-primary" style="max-width:280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:10px" onclick="connectYouTube()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M17.1 4.6s-.2-1.3-.8-1.9c-.7-.8-1.6-.8-2-.8C12 1.8 9 1.8 9 1.8s-3 0-5.3.1c-.4 0-1.3.1-2 .8C1.1 3.3.9 4.6.9 4.6S.7 6.1.7 7.6v1.4c0 1.5.2 3 .2 3s.2 1.3.8 1.9c.7.8 1.7.7 2.2.8C5.4 14.8 9 14.9 9 14.9s3 0 5.3-.2c.4 0 1.3-.1 2-.8.6-.6.8-1.9.8-1.9s.2-1.5.2-3V7.6c0-1.5-.2-3-.2-3Z" fill="#FF0000"/>
+          <path d="M7.3 11.4V6.3l5.4 2.6-5.4 2.5Z" fill="white"/>
+        </svg>
+        Connect with YouTube
+      </button>
+      <p style="font-size:11px;color:var(--text-3);margin-top:16px">Read-only access · No credit card · Free forever</p>
+    </div>
+
+    <div class="setup-card" style="background:var(--amber-light);border-color:rgba(245,166,35,0.2)">
+      <p style="font-size:13px;color:var(--amber-dark);line-height:1.6">
+        <strong>What we access:</strong> Video titles, view counts, like counts, comment counts, and publish dates from your public channel. Nothing private, nothing modifiable.
+      </p>
+    </div>
+  </div>
+
+  <!-- LOADING SCREEN -->
+  <div id="loading-screen">
+    <div class="loading-orb">
+      <svg viewBox="0 0 28 28" fill="none" stroke="#B5710A" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="14" cy="14" r="11" stroke-dasharray="4 3"/>
+        <path d="M14 8v6l3.5 3.5"/>
+      </svg>
+    </div>
+    <h2>Analysing your channel</h2>
+    <p style="margin-bottom:16px">Finding patterns in your content</p>
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div id="results-screen">
+    <div id="channel-banner" class="channel-banner"></div>
+    <div id="insights-section"></div>
+    <div id="ideas-section"></div>
+    <div id="blindspots-section"></div>
+    <div id="quickwin-section"></div>
+    <button class="reset-btn" onclick="resetApp()">← Analyse another channel</button>
+  </div>
+
+</main>
+
+<script>
+const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'; // replace before deploying
+
+const SYSTEM_PROMPT = `You are a personal YouTube content analyst. Analyze a creator's video performance data and return specific, data-driven insights. Never give generic YouTube advice — every insight must reference actual numbers from their data. Where relevant, connect insights to revenue impact.
+
+Always respond in this exact JSON format with no extra text, no markdown fences:
+{
+  "insights": [
+    {"title": "...", "detail": "...", "data_point": "..."}
+  ],
+  "ideas": [
+    {
+      "title": "...",
+      "hook": "...",
+      "outline": ["...", "...", "..."],
+      "why_it_works": "..."
+    }
+  ],
+  "blind_spots": [
+    {"issue": "...", "evidence": "..."}
+  ],
+  "quick_win": {
+    "action": "...",
+    "effort": "low",
+    "expected_impact": "..."
+  }
+}`;
+
+// ── On page load: check if we're back from Google OAuth ─────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const error = params.get('error');
+
+  if (error) {
+    showError('Google sign-in was cancelled. Please try again.');
+    return;
+  }
+
+  if (code) {
+    // Clean the URL so it doesn't look messy
+    window.history.replaceState({}, '', '/');
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('loading-screen').style.display = 'block';
+    fetchYouTubeData(code);
+  }
+});
+
+// ── Step 1: Get Google OAuth URL from backend, redirect user ────────────────
+async function connectYouTube() {
+  try {
+    const res = await fetch('/api/auth?action=url');
+    const { url } = await res.json();
+    window.location.href = url;
+  } catch (err) {
+    showError('Could not connect to YouTube. Please try again.');
+  }
+}
+
+// ── Step 2: Backend exchanges code for token + fetches YouTube data ──────────
+async function fetchYouTubeData(code) {
+  try {
+    const res = await fetch(`/api/auth?code=${encodeURIComponent(code)}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    await runAnalysis(data);
+  } catch (err) {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('setup-screen').style.display = 'block';
+    showError('Could not fetch your YouTube data: ' + err.message);
+  }
+}
+
+// ── Step 3: Send YouTube data to Gemini, get insights ───────────────────────
+async function runAnalysis(ytData) {
+  const { channelName, subscribers, avgViews, top5, bottom5, recent5 } = ytData;
+
+  const formatVideos = (list) => list.map(v =>
+    `Title: "${v.title}" | Views: ${v.views.toLocaleString()} | Likes: ${v.likes.toLocaleString()} | Comments: ${v.comments.toLocaleString()} | Published: ${v.published}`
+  ).join('\n');
+
+  const userPrompt = `Analyze this YouTube channel and return insights, ideas, blind spots, and a quick win.
+
+CHANNEL: ${channelName}
+SUBSCRIBERS: ${subscribers}
+AVG VIEWS PER VIDEO: ${avgViews}
+
+TOP 5 PERFORMING VIDEOS:
+${formatVideos(top5)}
+
+BOTTOM 5 PERFORMING VIDEOS:
+${formatVideos(bottom5)}
+
+MOST RECENT 5 VIDEOS:
+${formatVideos(recent5)}`;
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [{ parts: [{ text: userPrompt }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 8000 }
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'Gemini API request failed');
+    }
+
+    const geminiData = await response.json();
+    const raw = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(clean);
+
+    renderResults(result, ytData);
+
+  } catch (err) {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('setup-screen').style.display = 'block';
+    showError('Analysis failed: ' + err.message);
+  }
+}
+
+// ── Render dashboard ─────────────────────────────────────────────────────────
+function renderResults(data, ytData) {
+  const { channelName, subscribers, avgViews } = ytData;
+  const initial = channelName.trim().charAt(0).toUpperCase();
+
+  document.getElementById('channel-banner').innerHTML = `
+    <div class="ch-left">
+      <div class="ch-icon">${initial}</div>
+      <div>
+        <div class="ch-name">${channelName}</div>
+        <div class="ch-meta">${subscribers} subscribers</div>
+      </div>
+    </div>
+    <div class="ch-right">
+      <div class="ch-stat">
+        <div class="ch-stat-val">${avgViews}</div>
+        <div class="ch-stat-label">avg views/video</div>
+      </div>
+    </div>`;
+
+  const badgeColors = ['badge-coral', 'badge-amber', 'badge-purple'];
+  const badgeLabels = ['views pattern', 'timing', 'format'];
+
+  document.getElementById('insights-section').innerHTML = `
+    <div class="section-heading">Channel insights</div>
+    <div class="insights-grid">
+      ${(data.insights || []).map((ins, i) => `
+        <div class="insight-card">
+          <div class="insight-badge ${badgeColors[i % 3]}">${badgeLabels[i % 3]}</div>
+          <div class="insight-title">${ins.title}</div>
+          <div class="insight-detail">${ins.detail}</div>
+          <div class="insight-datapoint">${ins.data_point}</div>
+        </div>`).join('')}
+    </div>`;
+
+  document.getElementById('ideas-section').innerHTML = `
+    <div class="section-heading">Ideas for you</div>
+    <div class="ideas-stack">
+      ${(data.ideas || []).map((idea, i) => `
+        <div class="idea-card">
+          <div class="idea-num">${i + 1}</div>
+          <div>
+            <div class="idea-title">${idea.title}</div>
+            <div class="idea-hook">"${idea.hook}"</div>
+            <ul class="idea-outline">
+              ${(idea.outline || []).map(p => `<li>${p}</li>`).join('')}
+            </ul>
+            <span class="idea-why">${idea.why_it_works}</span>
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  document.getElementById('blindspots-section').innerHTML = `
+    <div class="section-heading">Blind spots</div>
+    <div class="blindspots-grid">
+      ${(data.blind_spots || []).map(b => `
+        <div class="blind-card">
+          <div class="blind-issue">${b.issue}</div>
+          <div class="blind-evidence">${b.evidence}</div>
+        </div>`).join('')}
+    </div>`;
+
+  const qw = data.quick_win || {};
+  document.getElementById('quickwin-section').innerHTML = `
+    <div class="section-heading">Quick win this week</div>
+    <div class="quickwin-card">
+      <div class="qw-orb">
+        <svg viewBox="0 0 18 18" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="9" r="7"/>
+          <path d="M9 5v4l2.5 2.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="qw-label">
+          action this week
+          <span class="effort-tag">${qw.effort || 'low'} effort</span>
+        </div>
+        <div class="qw-action">${qw.action}</div>
+        <div class="qw-impact">${qw.expected_impact}</div>
+      </div>
+    </div>`;
+
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showError(msg) {
+  const b = document.getElementById('error-banner');
+  b.textContent = msg;
+  b.style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetApp() {
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('setup-screen').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
